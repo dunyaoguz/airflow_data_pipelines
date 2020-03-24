@@ -2,7 +2,10 @@ from datetime import datetime, timedelta
 import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators.sparkify_plugin import StageToRedshiftOperator, LoadFactOperator, LoadDimensionOperator, DataQualityOperator
+from airflow.operators.sparkify_plugin import (StageToRedshiftOperator,
+                                               LoadFactOperator,
+                                               LoadDimensionOperator,
+                                               DataQualityOperator)
 from helpers import SqlQueries
 
 default_args = {
@@ -26,12 +29,22 @@ start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
-    dag=dag
+    dag=dag,
+    redshift_conn_id = "redshift",
+    aws_credentials = "aws_credentials",
+    table = "staging_events",
+    s3_bucket = "s3://udacity-dend/log_data",
+    copy_json_option = "s3://udacity-dend/log_json_path.json"
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
-    dag=dag
+    dag=dag,
+    redshift_conn_id = "redshift",
+    aws_credentials = "aws_credentials",
+    table = "staging_songs",
+    s3_bucket = "s3://udacity-dend/song_data",
+    copy_json_option = "auto"
 )
 
 load_songplays_table = LoadFactOperator(
