@@ -3,7 +3,7 @@ from __future__ import division, absolute_import, print_function
 from airflow.plugins_manager import AirflowPlugin
 
 import operators
-import helpers
+# import helpers
 
 # Defining the plugin class
 class SparkifyPlugin(AirflowPlugin):
@@ -14,6 +14,12 @@ class SparkifyPlugin(AirflowPlugin):
         operators.LoadDimensionOperator,
         operators.DataQualityOperator
     ]
-    helpers = [
-        helpers.SqlQueries
-    ]
+    # helpers = [
+    #     helpers.songplay_table_insert,
+    #     helpers.user_table_insert,
+    #     helpers.song_table_insert,
+    #     helpers.artist_table_insert,
+    #     helpers.time_table_insert,
+    #     helpers.staging_events_create,
+    #     helpers.staging_songs_create
+    # ]

@@ -6,7 +6,7 @@ from airflow.operators.sparkify_plugin import (StageToRedshiftOperator,
                                                LoadFactOperator,
                                                LoadDimensionOperator,
                                                DataQualityOperator)
-from helpers import SqlQueries
+from helpers import *
 
 default_args = {
     'owner': 'dunya_oguz',
@@ -30,21 +30,23 @@ start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
-    redshift_conn_id = "redshift",
-    aws_credentials = "aws_credentials",
-    table = "staging_events",
-    s3_bucket = "s3://udacity-dend/log_data",
-    copy_json_option = "s3://udacity-dend/log_json_path.json"
+    redshift_conn_id = 'redshift',
+    aws_credentials = 'aws_credentials',
+    table = 'staging_events',
+    create_statement=staging_events_create,
+    s3_bucket = 's3://udacity-dend/log_data',
+    copy_json_option = 's3://udacity-dend/log_json_path.json'
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
     dag=dag,
-    redshift_conn_id = "redshift",
-    aws_credentials = "aws_credentials",
-    table = "staging_songs",
-    s3_bucket = "s3://udacity-dend/song_data",
-    copy_json_option = "auto"
+    redshift_conn_id = 'redshift',
+    aws_credentials = 'aws_credentials',
+    table = 'staging_songs',
+    create_statement=staging_songs_create,
+    s3_bucket = 's3://udacity-dend/song_data',
+    copy_json_option = 'auto'
 )
 
 load_songplays_table = LoadFactOperator(

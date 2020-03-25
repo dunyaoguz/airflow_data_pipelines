@@ -32,7 +32,7 @@ def create_role():
                                                                                                           'Effect': 'Allow',
                                                                                                           'Principal': {'Service': 'redshift.amazonaws.com'}}],
                                                                                            'Version': '2012-10-17'}))
-    # attach s3 read access policy to dwh_project_s3_access
+    # attach s3 read access policy to airflow_project_s3_access
     iam.attach_role_policy(RoleName='airflow_project_s3_access', PolicyArn="arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess")
 
 def create_cluster(ROLE_ARN):
@@ -86,21 +86,22 @@ def reset():
 
 def main():
     ROLE_ARN = iam.get_role(RoleName='dwh_project_s3_access')['Role']['Arn']
-    print(f'arn: {ROLE_ARN}')
+    print(f'ARN: {ROLE_ARN}')
 
-    # create_cluster(ROLE_ARN)
+    # uncomment code below to create cluster
+    create_cluster(ROLE_ARN)
     check_status('available')
 
     ENDPOINT = redshift.describe_clusters(ClusterIdentifier='redshift-cluster-1')['Clusters'][0]['Endpoint']['Address']
     PORT = redshift.describe_clusters(ClusterIdentifier='redshift-cluster-1')['Clusters'][0]['Endpoint']['Port']
-    print(f'host: {ENDPOINT}')
-    print(f'port: {PORT}')
+    print(f'HOST: {ENDPOINT}')
+    print(f'PORT: {PORT}')
 
     check_connection(ENDPOINT, PORT)
 
-    # uncomment the code below when you want to delete the cluster
-    reset()
-    check_status('deleted')
+    # uncomment the code below to delete the cluster
+    # reset()
+    # check_status('deleted')
 
 if __name__ == "__main__":
     main()
