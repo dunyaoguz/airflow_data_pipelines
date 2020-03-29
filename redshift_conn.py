@@ -89,8 +89,8 @@ def main():
     print(f'ARN: {ROLE_ARN}')
 
     # uncomment code below to create cluster
-    create_cluster(ROLE_ARN)
-    check_status('available')
+    # create_cluster(ROLE_ARN)
+    # check_status('available')
 
     ENDPOINT = redshift.describe_clusters(ClusterIdentifier='redshift-cluster-1')['Clusters'][0]['Endpoint']['Address']
     PORT = redshift.describe_clusters(ClusterIdentifier='redshift-cluster-1')['Clusters'][0]['Endpoint']['Port']
@@ -100,8 +100,8 @@ def main():
     check_connection(ENDPOINT, PORT)
 
     # uncomment the code below to delete the cluster
-    # reset()
-    # check_status('deleted')
+    reset()
+    check_status('deleted')
 
 if __name__ == "__main__":
     main()
