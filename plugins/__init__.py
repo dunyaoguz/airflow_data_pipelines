@@ -12,16 +12,17 @@ class SparkifyPlugin(AirflowPlugin):
         operators.StageToRedshiftOperator,
         operators.LoadFactOperator,
         operators.LoadDimensionOperator,
-        operators.DataQualityOperator
+        operators.DataQualityOperator,
+        operators.CreateTablesOperator
     ]
     helpers = [
-        helpers.songplay_table_insert,
-        helpers.user_table_insert,
-        helpers.song_table_insert,
-        helpers.artist_table_insert,
+        helpers.songplays_table_insert,
+        helpers.users_table_insert,
+        helpers.songs_table_insert,
+        helpers.artists_table_insert,
         helpers.time_table_insert,
-        helpers.staging_events_create,
-        helpers.staging_songs_create,
+        helpers.staging_events_table_create,
+        helpers.staging_songs_table_create,
         helpers.artists_table_create,
         helpers.songplays_table_create,
         helpers.songs_table_create,

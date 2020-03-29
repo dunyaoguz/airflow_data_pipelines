@@ -5,6 +5,8 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
 class StageToRedshiftOperator(BaseOperator):
+    """Extracts JSON data from S3 and loads it onto staging tables on Redshift"""
+
     ui_color = '#358140'
 
     @apply_defaults
@@ -12,7 +14,6 @@ class StageToRedshiftOperator(BaseOperator):
                  redshift_conn_id = "",
                  aws_credentials = "",
                  table = "",
-                 create_statement="",
                  s3_bucket = "",
                  copy_json_option= "",
                  *args, **kwargs):
@@ -21,7 +22,6 @@ class StageToRedshiftOperator(BaseOperator):
         self.redshift_conn_id = redshift_conn_id
         self.aws_credentials = aws_credentials
         self.table = table
-        self.create_statement = create_statement
         self.s3_bucket = s3_bucket
         self.copy_json_option = copy_json_option
 
@@ -31,12 +31,6 @@ class StageToRedshiftOperator(BaseOperator):
         aws_hook = AwsHook(self.aws_credentials)
         credentials = aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id = self.redshift_conn_id)
-
-        self.log.info('Clearing data at Redshift source')
-        redshift.run('DROP TABLE IF EXISTS {}'.format(self.table))
-
-        self.log.info('Create the destination tables on Redshift')
-        redshift.run(self.create_statement)
 
         self.log.info('Copying data from s3 to Redshift')
         redshift.run("""COPY {}
