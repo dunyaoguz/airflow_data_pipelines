@@ -70,7 +70,8 @@ load_user_dimension_table = LoadDimensionOperator(
     dag=dag,
     table='users',
     redshift_conn_id='redshift',
-    insert_statement=users_table_insert
+    insert_statement=users_table_insert,
+    truncate_insert=True
 )
 
 load_song_dimension_table = LoadDimensionOperator(
@@ -78,7 +79,8 @@ load_song_dimension_table = LoadDimensionOperator(
     dag=dag,
     table='songs',
     redshift_conn_id='redshift',
-    insert_statement=songs_table_insert
+    insert_statement=songs_table_insert,
+    truncate_insert=True
 )
 
 load_artist_dimension_table = LoadDimensionOperator(
@@ -86,7 +88,8 @@ load_artist_dimension_table = LoadDimensionOperator(
     dag=dag,
     table='artists',
     redshift_conn_id='redshift',
-    insert_statement=artists_table_insert
+    insert_statement=artists_table_insert,
+    truncate_insert=True
 )
 
 load_time_dimension_table = LoadDimensionOperator(
@@ -94,17 +97,19 @@ load_time_dimension_table = LoadDimensionOperator(
     dag=dag,
     table='time',
     redshift_conn_id='redshift',
-    insert_statement=time_table_insert
+    insert_statement=time_table_insert,
+    truncate_insert=True
 )
 
-# run_quality_checks = DataQualityOperator(
-#     task_id='Run_data_quality_checks',
-#     dag=dag,
-#     tables_list=['songplays', 'songs', 'users', 'time', 'artist'],
-#     redshift_conn_id = 'redshift',
-# )
-#
-# end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
+run_quality_checks = DataQualityOperator(
+    task_id='Run_data_quality_checks',
+    dag=dag,
+    redshift_conn_id = 'redshift',
+    test_query="SELECT COUNT(*) FROM songplays WHERE songplay_id IS NULL",
+    expected_result=0
+)
+
+end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 # Configure upsteam/downstream tasks
 start_operator >> create_tables
@@ -116,8 +121,8 @@ load_songplays_table >> load_song_dimension_table
 load_songplays_table >> load_user_dimension_table
 load_songplays_table >> load_artist_dimension_table
 load_songplays_table >> load_time_dimension_table
-# load_song_dimension_table >> run_quality_checks
-# load_user_dimension_table >> run_quality_checks
-# load_artist_dimension_table >> run_quality_checks
-# load_time_dimension_table >> run_quality_checks
-# run_quality_checks >> end_operator
+load_song_dimension_table >> run_quality_checks
+load_user_dimension_table >> run_quality_checks
+load_artist_dimension_table >> run_quality_checks
+load_time_dimension_table >> run_quality_checks
+run_quality_checks >> end_operator

@@ -42,7 +42,7 @@ artists_table_create = """
 
 songplays_table_create = """
             CREATE TABLE public.songplays (
-            	playid varchar(32) NOT NULL,
+            	songplay_id varchar(32) NOT NULL,
             	start_time timestamp NOT NULL,
             	userid int4 NOT NULL,
             	"level" varchar(256),
